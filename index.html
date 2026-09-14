@@ -1,0 +1,1226 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+    <link rel="icon" href="favicon.ico" type="image/x-icon" />
+    <title>Informe de Predicación</title>
+
+    <!-- ── Configuración de congregación ── -->
+    <script src="/config.js"></script>
+    <script>
+      document.title = "Informe de Predicación — " + (window.INFORME_CONFIG?.congregacion || "Congregación");
+    </script>
+
+    <style>
+      /* ── Reset ─────────────────────────────────────────────────────── */
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      /* ── Tokens ────────────────────────────────────────────────────── */
+      :root {
+        --primary: #3366cc;
+        --primary-dk: #2a56b3;
+        --primary-tint: rgba(51, 102, 204, 0.1);
+        --primary-ring: rgba(51, 102, 204, 0.18);
+
+        --bg: #eef1f8;
+        --surface: #ffffff;
+        --surface-2: #f7f9fc;
+        --text: #1a1d2e;
+        --sub: #6b7280;
+        --border: #dde2ee;
+
+        --ok: #059669;
+        --ok-bg: #d1fae5;
+        --err: #dc2626;
+        --err-bg: #fff1f2;
+        --err-border: #fecdd3;
+
+        --shadow-card: 0 4px 32px rgba(51, 102, 204, 0.1), 0 1px 4px rgba(0, 0, 0, 0.06);
+        --shadow-pop: 0 8px 40px rgba(0, 0, 0, 0.18);
+
+        --r-sm: 8px;
+        --r-md: 14px;
+        --r-lg: 22px;
+        --r-pill: 100px;
+
+        --t: 0.18s ease;
+      }
+
+      /* ── Dark mode ─────────────────────────────────────────────────── */
+      body.modo-oscuro {
+        --bg: #0d1117;
+        --surface: #161b22;
+        --surface-2: #21262d;
+        --text: #e6edf3;
+        --sub: #8b949e;
+        --border: #30363d;
+
+        --primary: #6699ff;
+        --primary-dk: #4a7cd6;
+        --primary-tint: rgba(102, 153, 255, 0.1);
+        --primary-ring: rgba(102, 153, 255, 0.2);
+
+        --ok: #34d399;
+        --ok-bg: #0a2a1a;
+        --err: #f87171;
+        --err-bg: #1c0a0a;
+        --err-border: #7f1d1d;
+
+        --shadow-card: 0 4px 32px rgba(0, 0, 0, 0.5);
+        --shadow-pop: 0 8px 40px rgba(0, 0, 0, 0.6);
+      }
+
+      /* ── Base ──────────────────────────────────────────────────────── */
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 2rem 1rem 3.5rem;
+        transition:
+          background var(--t),
+          color var(--t);
+        line-height: 1.5;
+      }
+
+      /* ── Card ──────────────────────────────────────────────────────── */
+      .card {
+        background: var(--surface);
+        border-radius: var(--r-lg);
+        box-shadow: var(--shadow-card);
+        border: 1px solid var(--border);
+        width: 100%;
+        max-width: 460px;
+        padding: 1.75rem 1.5rem;
+        transition:
+          background var(--t),
+          border-color var(--t),
+          box-shadow var(--t);
+      }
+
+      /* ── Card header ───────────────────────────────────────────────── */
+      .card-head {
+        text-align: center;
+        padding-bottom: 1.4rem;
+        margin-bottom: 1.6rem;
+        border-bottom: 1px solid var(--border);
+      }
+
+      .card-icon {
+        width: 50px;
+        height: 50px;
+        background: var(--primary-tint);
+        border-radius: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 0.85rem;
+        color: var(--primary);
+        transition: background var(--t);
+      }
+      .card-icon .material-symbols-outlined {
+        font-size: 1.65rem;
+      }
+
+      .card-head h2 {
+        font-size: 1.3rem;
+        font-weight: 700;
+        letter-spacing: -0.025em;
+        color: var(--text);
+      }
+
+      .card-head p {
+        font-size: 0.82rem;
+        color: var(--sub);
+        margin-top: 0.2rem;
+      }
+
+      /* ── Field ─────────────────────────────────────────────────────── */
+      .field {
+        margin-bottom: 1.25rem;
+      }
+
+      .field > label,
+      .field-lbl {
+        display: block;
+        font-size: 0.75rem;
+        font-weight: 600;
+        letter-spacing: 0.07em;
+        text-transform: uppercase;
+        color: var(--sub);
+        margin-bottom: 0.42rem;
+      }
+
+      .field > label small {
+        font-size: 0.76rem;
+        text-transform: none;
+        letter-spacing: 0;
+        font-weight: 400;
+        color: var(--sub);
+        margin-left: 0.2em;
+      }
+
+      /* ── Inputs ────────────────────────────────────────────────────── */
+      input[type="text"],
+      input[type="number"],
+      textarea,
+      select {
+        width: 100%;
+        padding: 0.62rem 0.85rem;
+        font-size: 0.97rem;
+        font-family: inherit;
+        background: var(--surface-2);
+        color: var(--text);
+        border: 1.5px solid var(--border);
+        border-radius: var(--r-sm);
+        outline: none;
+        transition:
+          border-color var(--t),
+          box-shadow var(--t),
+          background var(--t);
+        appearance: none;
+        -webkit-appearance: none;
+      }
+
+      select {
+        cursor: pointer;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath fill='%236b7280' d='M4 6l4 4 4-4z'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 0.75rem center;
+        background-size: 18px;
+        padding-right: 2.4rem;
+      }
+
+      input:focus,
+      textarea:focus,
+      select:focus {
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px var(--primary-ring);
+        background: var(--surface);
+      }
+
+      textarea {
+        resize: vertical;
+        min-height: 76px;
+      }
+
+      /* ── Chip group (radio pills) ──────────────────────────────────── */
+      .chip-group {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.42rem;
+      }
+
+      .chip-group input[type="radio"] {
+        position: absolute;
+        opacity: 0;
+        pointer-events: none;
+        width: 0;
+        height: 0;
+      }
+
+      .chip-group label {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.42rem 0.95rem;
+        background: var(--surface-2);
+        border: 1.5px solid var(--border);
+        border-radius: var(--r-pill);
+        font-size: 0.88rem;
+        font-weight: 500;
+        color: var(--sub);
+        cursor: pointer;
+        transition: all var(--t);
+        user-select: none;
+        text-transform: none;
+        letter-spacing: 0;
+        margin-bottom: 0;
+      }
+
+      .chip-group input[type="radio"]:checked + label {
+        background: var(--primary);
+        border-color: var(--primary);
+        color: #fff;
+        box-shadow: 0 2px 10px var(--primary-ring);
+      }
+
+      .chip-group label:hover {
+        border-color: var(--primary);
+        color: var(--primary);
+        background: var(--primary-tint);
+      }
+
+      .chip-group input[type="radio"]:checked + label:hover {
+        background: var(--primary-dk);
+        border-color: var(--primary-dk);
+        color: #fff;
+      }
+
+      /* ── Separator ─────────────────────────────────────────────────── */
+      .sep {
+        border: none;
+        border-top: 1px solid var(--border);
+        margin: 1.5rem 0;
+      }
+
+      /* ── Hidden / reveal animation ─────────────────────────────────── */
+      .hidden {
+        display: none;
+      }
+
+      #campo-predico:not(.hidden),
+      #campo-horas:not(.hidden) {
+        animation: fadeUp 0.22s ease;
+      }
+
+      @keyframes fadeUp {
+        from {
+          opacity: 0;
+          transform: translateY(-6px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      /* ── Submit ────────────────────────────────────────────────────── */
+      button[type="submit"] {
+        display: block;
+        width: 100%;
+        padding: 0.82rem;
+        background: var(--primary);
+        color: #fff;
+        border: none;
+        border-radius: var(--r-sm);
+        font-size: 0.97rem;
+        font-weight: 600;
+        font-family: inherit;
+        cursor: pointer;
+        letter-spacing: 0.01em;
+        margin-top: 0.4rem;
+        transition:
+          background var(--t),
+          box-shadow var(--t),
+          transform 0.1s;
+        box-shadow: 0 4px 14px var(--primary-ring);
+      }
+
+      button[type="submit"]:hover {
+        background: var(--primary-dk);
+        box-shadow: 0 6px 20px var(--primary-ring);
+      }
+      button[type="submit"]:active {
+        transform: scale(0.985);
+      }
+      button[type="submit"]:disabled {
+        opacity: 0.5;
+        cursor: default;
+        pointer-events: none;
+      }
+
+      /* ── Confirmation ──────────────────────────────────────────────── */
+      .confirmacion {
+        text-align: center;
+      }
+
+      .ok-circle {
+        width: 62px;
+        height: 62px;
+        background: var(--ok-bg);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 1rem;
+        color: var(--ok);
+        font-size: 1.75rem;
+      }
+
+      .confirmacion h2 {
+        color: var(--ok);
+        font-size: 1.3rem;
+        margin-bottom: 0.35rem;
+      }
+      .confirmacion > p {
+        font-size: 0.84rem;
+        color: var(--sub);
+        margin-bottom: 1.4rem;
+      }
+
+      .resumen-informe {
+        text-align: left;
+        padding: 0.9rem 1rem;
+        background: var(--surface-2);
+        border: 1px solid var(--border);
+        border-left: 3px solid var(--primary);
+        border-radius: var(--r-sm);
+        font-size: 0.88rem;
+        line-height: 1.95;
+        margin-bottom: 1.4rem;
+      }
+
+      .btn-otro {
+        display: block;
+        width: 100%;
+        padding: 0.78rem;
+        background: var(--primary);
+        color: #fff;
+        border: none;
+        border-radius: var(--r-sm);
+        font-size: 0.93rem;
+        font-weight: 600;
+        font-family: inherit;
+        cursor: pointer;
+        transition: background var(--t);
+      }
+      .btn-otro:hover {
+        background: var(--primary-dk);
+      }
+
+      /* ── Error box ─────────────────────────────────────────────────── */
+      .error-box {
+        display: none;
+        background: var(--err-bg);
+        border: 1px solid var(--err-border);
+        border-radius: var(--r-md);
+        padding: 1.5rem;
+        text-align: center;
+        width: 100%;
+        max-width: 460px;
+        margin-top: 0;
+      }
+
+      .error-box h3 {
+        color: var(--err);
+        font-size: 1rem;
+        margin-bottom: 0.4rem;
+      }
+      .error-box p {
+        color: var(--err);
+        font-size: 0.87rem;
+        opacity: 0.85;
+      }
+
+      .btn-reintentar {
+        display: inline-block;
+        margin-top: 1rem;
+        padding: 0.62rem 1.2rem;
+        background: var(--err);
+        color: #fff;
+        border: none;
+        border-radius: var(--r-sm);
+        font-size: 0.88rem;
+        font-weight: 600;
+        font-family: inherit;
+        cursor: pointer;
+        transition: opacity var(--t);
+      }
+      .btn-reintentar:hover {
+        opacity: 0.85;
+      }
+
+      /* ── Footer ────────────────────────────────────────────────────── */
+      .footer {
+        width: 100%;
+        max-width: 460px;
+        display: flex;
+        justify-content: center;
+        margin-top: 1rem;
+        height: auto;
+        padding: 0;
+      }
+
+      .footer button {
+        background: none;
+        border: none;
+        color: var(--sub);
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        padding: 0.4rem;
+        border-radius: var(--r-sm);
+        font-size: 1.35rem;
+        transition:
+          color var(--t),
+          background var(--t);
+      }
+      .footer button:hover {
+        color: var(--text);
+        background: var(--surface-2);
+      }
+
+      /* ── Config overlay ────────────────────────────────────────────── */
+      #overlay-config {
+        display: none;
+        position: fixed;
+        inset: 0;
+        z-index: 2000;
+        background: rgba(0, 0, 0, 0.5);
+        backdrop-filter: blur(4px);
+      }
+
+      #overlay-config .contenedor {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 88%;
+        max-width: 360px;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--r-lg);
+        padding: 1.5rem;
+        box-shadow: var(--shadow-pop);
+      }
+
+      #overlay-config button.cerrar {
+        position: absolute;
+        top: 0.9rem;
+        right: 0.9rem;
+        background: none;
+        border: none;
+        font-size: 1.2rem;
+        cursor: pointer;
+        color: var(--sub);
+        width: 28px;
+        height: 28px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 6px;
+        transition: background var(--t);
+        line-height: 1;
+      }
+      #overlay-config button.cerrar:hover {
+        background: var(--surface-2);
+      }
+
+      .title-config {
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+        font-size: 1rem;
+        font-weight: 600;
+        color: var(--text);
+        margin-bottom: 1.2rem;
+        background: none;
+        border: none;
+        padding: 0;
+      }
+      .title-config .material-symbols-outlined {
+        font-size: 1.15rem;
+        color: var(--sub);
+      }
+
+      .theme-controls label {
+        display: block;
+        font-size: 0.72rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.09em;
+        color: var(--sub);
+        margin-bottom: 0.45rem;
+      }
+
+      /* ── Modal validación ──────────────────────────────────────────── */
+      #modal-validacion {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.55);
+        backdrop-filter: blur(4px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 3000;
+      }
+      #modal-validacion.oculto {
+        display: none;
+      }
+
+      #modal-validacion .modal-contenido {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--r-lg);
+        padding: 1.75rem 1.4rem 1.4rem;
+        max-width: 315px;
+        width: 90%;
+        text-align: center;
+        box-shadow: var(--shadow-pop);
+      }
+
+      #modal-validacion .modal-icono {
+        font-size: 2rem;
+        margin-bottom: 0.55rem;
+      }
+      #modal-validacion h3 {
+        font-size: 1rem;
+        font-weight: 700;
+        color: var(--text);
+        margin-bottom: 0.35rem;
+      }
+      #modal-validacion p {
+        color: var(--sub);
+        font-size: 0.87rem;
+        line-height: 1.55;
+        margin-bottom: 1.2rem;
+      }
+
+      .modal-btns {
+        display: flex;
+        gap: 0.5rem;
+      }
+
+      .btn-modal-primario {
+        flex: 1;
+        padding: 0.62rem;
+        background: var(--primary);
+        color: #fff;
+        border: none;
+        border-radius: var(--r-sm);
+        font-size: 0.88rem;
+        font-weight: 600;
+        font-family: inherit;
+        cursor: pointer;
+        transition: background var(--t);
+      }
+      .btn-modal-primario:hover {
+        background: var(--primary-dk);
+      }
+
+      .btn-modal-secundario {
+        flex: 1;
+        padding: 0.62rem;
+        background: var(--surface-2);
+        border: 1.5px solid var(--border);
+        color: var(--text);
+        border-radius: var(--r-sm);
+        font-size: 0.88rem;
+        font-weight: 600;
+        font-family: inherit;
+        cursor: pointer;
+        transition: background var(--t);
+      }
+      .btn-modal-secundario:hover {
+        background: var(--border);
+      }
+
+      /* ── Modal reenvío ─────────────────────────────────────────────── */
+      .modal {
+        position: fixed;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 2000;
+        background: rgba(0, 0, 0, 0.55);
+        backdrop-filter: blur(4px);
+      }
+      .modal.oculto {
+        display: none;
+      }
+
+      .modal-contenido {
+        position: relative;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--r-lg);
+        padding: 1.75rem 1.4rem 1.4rem;
+        max-width: 360px;
+        width: 90%;
+        text-align: center;
+        box-shadow: var(--shadow-pop);
+      }
+
+      #modal-reenvio button.cerrar {
+        position: absolute;
+        top: 0.9rem;
+        right: 0.9rem;
+        background: none;
+        border: none;
+        font-size: 1.2rem;
+        cursor: pointer;
+        color: var(--sub);
+        width: 28px;
+        height: 28px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 6px;
+        line-height: 1;
+      }
+
+      #modal-reenvio h2 {
+        color: var(--text);
+        font-size: 1.15rem;
+        margin-bottom: 0.5rem;
+      }
+      #modal-reenvio p {
+        color: var(--sub);
+        font-size: 0.88rem;
+        line-height: 1.55;
+        margin-bottom: 1.2rem;
+      }
+
+      .editBtn {
+        padding: 0.62rem 1.5rem;
+        background: var(--surface-2);
+        border: 1.5px solid var(--border);
+        color: var(--text);
+        border-radius: var(--r-sm);
+        font-size: 0.88rem;
+        font-weight: 600;
+        font-family: inherit;
+        cursor: pointer;
+        transition: background var(--t);
+      }
+      .editBtn:hover {
+        background: var(--border);
+      }
+
+      .material-symbols-outlined {
+        user-select: none;
+      }
+    </style>
+  </head>
+
+  <body>
+    <!-- ── Formulario ──────────────────────────────────────────────── -->
+    <form id="formulario" class="card">
+      <div class="card-head">
+        <div class="card-icon">
+          <span class="material-symbols-outlined">assignment</span>
+        </div>
+        <h2>Informe de Predicación</h2>
+        <p id="card-subtitle"></p>
+      </div>
+
+      <div class="field">
+        <label for="nombre">Nombre completo</label>
+        <input type="text" id="nombre" name="nombre" placeholder="Nombre y apellido" required />
+      </div>
+
+      <div class="field">
+        <label for="grupo">Grupo</label>
+        <select id="grupo" name="grupo" required>
+          <option value="" disabled selected>Selecciona un grupo</option>
+          <!-- Opciones generadas dinámicamente desde config.js -->
+        </select>
+      </div>
+
+      <div class="field">
+        <label for="mes">Mes del informe</label>
+        <select id="mes" name="mes" required>
+          <option value="">Selecciona el mes</option>
+          <option value="Enero">Enero</option>
+          <option value="Febrero">Febrero</option>
+          <option value="Marzo">Marzo</option>
+          <option value="Abril">Abril</option>
+          <option value="Mayo">Mayo</option>
+          <option value="Junio">Junio</option>
+          <option value="Julio">Julio</option>
+          <option value="Agosto">Agosto</option>
+          <option value="Septiembre">Septiembre</option>
+          <option value="Octubre">Octubre</option>
+          <option value="Noviembre">Noviembre</option>
+          <option value="Diciembre">Diciembre</option>
+        </select>
+      </div>
+
+      <hr class="sep" />
+
+      <div class="field">
+        <span class="field-lbl">Perfil</span>
+        <div class="chip-group">
+          <input type="radio" id="p-pub" name="perfil" value="Publicador" required />
+          <label for="p-pub">Publicador</label>
+          <input type="radio" id="p-aux" name="perfil" value="Precursor Auxiliar" />
+          <label for="p-aux">Precursor Auxiliar</label>
+          <input type="radio" id="p-reg" name="perfil" value="Precursor Regular" />
+          <label for="p-reg">Precursor Regular</label>
+        </div>
+      </div>
+
+      <!-- Visible solo para Publicador -->
+      <div class="field hidden" id="campo-predico">
+        <span class="field-lbl">¿Predicó este mes?</span>
+        <div class="chip-group">
+          <input type="radio" id="pred-si" name="predico" value="Sí" />
+          <label for="pred-si">Sí</label>
+          <input type="radio" id="pred-no" name="predico" value="No" />
+          <label for="pred-no">No</label>
+        </div>
+      </div>
+
+      <!-- Visible solo para Precursores -->
+      <div class="field hidden" id="campo-horas">
+        <label for="horas">Horas <small>(solo horas completas o redondeadas)</small></label>
+        <input type="number" id="horas" name="horas" min="0" step="1" placeholder="0" />
+      </div>
+
+      <hr class="sep" />
+
+      <div class="field">
+        <label for="cursos">Cursos bíblicos</label>
+        <input type="number" id="cursos" name="cursos" min="0" placeholder="0" />
+      </div>
+
+      <div class="field">
+        <label for="comentarios">Comentarios <small>(opcional)</small></label>
+        <textarea id="comentarios" name="comentarios" placeholder="Comentarios adicionales..."></textarea>
+      </div>
+
+      <button type="submit">Enviar informe</button>
+    </form>
+
+    <!-- ── Confirmación ─────────────────────────────────────────────── -->
+    <div class="card confirmacion" id="confirmacion" style="display: none">
+      <div class="ok-circle">
+        <span class="material-symbols-outlined">check</span>
+      </div>
+      <h2>¡Gracias, <span id="span-nombre"></span>!</h2>
+      <p>Tu informe fue enviado correctamente.</p>
+
+      <div class="resumen-informe">
+        <strong>Mes:</strong> <span id="span-mes"></span><br />
+        <strong>Perfil:</strong> <span id="span-perfil"></span><br />
+        <span id="span-horas-o-predico"></span>
+        <strong>Cursos bíblicos:</strong> <span id="span-cursos"></span><br />
+        <span id="span-comentarios"></span>
+      </div>
+
+      <p style="font-size: 0.82rem; color: var(--sub); text-align: center; margin-bottom: 1.2rem">
+        Puedes enviar otro informe si es de otra persona.
+      </p>
+
+      <button class="btn-otro" onclick="volverFormulario()">Enviar otro informe</button>
+    </div>
+
+    <!-- ── Error ────────────────────────────────────────────────────── -->
+    <div class="error-box" id="error-box">
+      <h3>Error al enviar</h3>
+      <p>Hubo un problema al enviar el informe. Verifica tu conexión e intenta de nuevo.</p>
+      <button class="btn-reintentar" onclick="reintentarEnvio()">Reintentar</button>
+    </div>
+
+    <!-- ── Footer / Settings ────────────────────────────────────────── -->
+    <div class="footer" id="footer">
+      <button id="config">
+        <span class="material-symbols-outlined">settings</span>
+      </button>
+    </div>
+
+    <!-- ── Overlay Config ───────────────────────────────────────────── -->
+    <div id="overlay-config">
+      <div class="contenedor">
+        <button class="cerrar" onclick="cerrarConfig()">×</button>
+        <span class="title-config">
+          <span class="material-symbols-outlined">settings</span>
+          Configuración
+        </span>
+        <div class="theme-controls">
+          <label for="select-theme">Tema</label>
+          <select id="select-theme" aria-label="Seleccionar tema">
+            <option value="auto">Auto (sistema)</option>
+            <option value="light">Claro</option>
+            <option value="dark">Oscuro</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Modal de validación ──────────────────────────────────────── -->
+    <div id="modal-validacion" class="oculto">
+      <div class="modal-contenido">
+        <div class="modal-icono" id="modal-val-icono"></div>
+        <h3 id="modal-val-titulo"></h3>
+        <p id="modal-val-mensaje"></p>
+        <div class="modal-btns" id="modal-val-btns"></div>
+      </div>
+    </div>
+
+    <!-- ── Modal reenvío ────────────────────────────────────────────── -->
+    <div id="modal-reenvio" class="modal oculto">
+      <div class="modal-contenido">
+        <button class="cerrar" onclick="cerrarAdvertenciaReenvio()">×</button>
+        <h2 id="modal-1-title"></h2>
+        <p id="modal-mensaje"></p>
+        <button id="btn-editar" class="editBtn">Editar informe</button>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         0. INICIALIZAR DESDE CONFIG
+    ═══════════════════════════════════════════════════════════════ -->
+    <script>
+      (function () {
+        const C = window.INFORME_CONFIG;
+        if (!C) { console.error("config.js no encontrado"); return; }
+
+        // Subtítulo de la congregación en la card
+        const subtitle = document.getElementById("card-subtitle");
+        if (subtitle) subtitle.textContent = C.congregacion;
+
+        // Opciones del select de grupo
+        const grupoSel = document.getElementById("grupo");
+        if (grupoSel) {
+          C.grupos.forEach(function (g) {
+            const opt = document.createElement("option");
+            opt.value = g;
+            opt.textContent = "Grupo " + g;
+            grupoSel.appendChild(opt);
+          });
+        }
+      })();
+    </script>
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         1. TEMAS
+    ═══════════════════════════════════════════════════════════════ -->
+    <script>
+      const THEME_KEY = window.INFORME_CONFIG.prefix + "theme";
+
+      function esTemaOscuro(theme) {
+        if (theme === "auto") return window.matchMedia("(prefers-color-scheme: dark)").matches;
+        return theme.startsWith("dark");
+      }
+
+      function applyTheme(theme) {
+        if (!theme) theme = "auto";
+        const resolved =
+          theme === "auto" ? (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light") : theme;
+        document.body.setAttribute("data-theme", resolved);
+        document.body.classList.toggle("modo-oscuro", esTemaOscuro(theme));
+        localStorage.setItem(THEME_KEY, theme);
+        const sel = document.getElementById("select-theme");
+        if (sel) sel.value = theme;
+      }
+
+      applyTheme(localStorage.getItem(THEME_KEY) || "auto");
+
+      window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => {
+        if (localStorage.getItem(THEME_KEY) === "auto") applyTheme("auto");
+      });
+    </script>
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         2. UI GENERAL
+    ═══════════════════════════════════════════════════════════════ -->
+    <script>
+      function cerrarConfig() {
+        document.getElementById("overlay-config").style.display = "none";
+      }
+
+      function cerrarAdvertenciaReenvio() {
+        document.getElementById("modal-reenvio").classList.add("oculto");
+      }
+
+      window.addEventListener("DOMContentLoaded", () => {
+        document.getElementById("config")?.addEventListener("click", () => {
+          document.getElementById("overlay-config").style.display = "block";
+        });
+
+        document.getElementById("select-theme")?.addEventListener("change", (e) => {
+          applyTheme(e.target.value);
+        });
+
+        // ── Modal de validación ───────────────────────────────────────
+        window.mostrarModalAviso = function (icono, titulo, mensaje) {
+          return new Promise((resolve) => {
+            document.getElementById("modal-val-icono").textContent = icono;
+            document.getElementById("modal-val-titulo").textContent = titulo;
+            document.getElementById("modal-val-mensaje").textContent = mensaje;
+
+            const btns = document.getElementById("modal-val-btns");
+            btns.innerHTML = `<button class="btn-modal-primario" id="btn-val-ok">Entendido</button>`;
+
+            document.getElementById("btn-val-ok").onclick = () => {
+              document.getElementById("modal-validacion").classList.add("oculto");
+              resolve();
+            };
+
+            document.getElementById("modal-validacion").classList.remove("oculto");
+          });
+        };
+
+        window.mostrarModalConfirm = function (
+          icono,
+          titulo,
+          mensaje,
+          textoOk = "Sí, enviar",
+          textoCancelar = "Corregir"
+        ) {
+          return new Promise((resolve) => {
+            document.getElementById("modal-val-icono").textContent = icono;
+            document.getElementById("modal-val-titulo").textContent = titulo;
+            document.getElementById("modal-val-mensaje").textContent = mensaje;
+
+            const btns = document.getElementById("modal-val-btns");
+            btns.innerHTML = `
+              <button class="btn-modal-secundario" id="btn-val-cancelar">${textoCancelar}</button>
+              <button class="btn-modal-primario"   id="btn-val-ok">${textoOk}</button>
+            `;
+
+            document.getElementById("btn-val-ok").onclick = () => {
+              document.getElementById("modal-validacion").classList.add("oculto");
+              resolve(true);
+            };
+
+            document.getElementById("btn-val-cancelar").onclick = () => {
+              document.getElementById("modal-validacion").classList.add("oculto");
+              resolve(false);
+            };
+
+            document.getElementById("modal-validacion").classList.remove("oculto");
+          });
+        };
+      });
+    </script>
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         3. FIREBASE + LÓGICA PRINCIPAL
+    ═══════════════════════════════════════════════════════════════ -->
+    <script type="module">
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+      import {
+        getFirestore,
+        collection,
+        addDoc
+      } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+      import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+
+      const C = window.INFORME_CONFIG;
+
+      const app = initializeApp(C.firebase);
+      const db = getFirestore(app);
+      const auth = getAuth(app);
+
+      signInAnonymously(auth)
+        .then(() => console.log("✅ Usuario anónimo autenticado"))
+        .catch((err) => console.error("❌ Error de autenticación:", err.code, err.message));
+
+      // ── Elementos ───────────────────────────────────────────────────
+      const form = document.getElementById("formulario");
+      const confirmacion = document.getElementById("confirmacion");
+      const campoPredico = document.getElementById("campo-predico");
+      const campoHoras = document.getElementById("campo-horas");
+      const nombreInput = document.getElementById("nombre");
+      const grupoSelect = document.getElementById("grupo");
+      const mesSelect = document.getElementById("mes");
+
+      const MESES = [
+        "Enero",
+        "Febrero",
+        "Marzo",
+        "Abril",
+        "Mayo",
+        "Junio",
+        "Julio",
+        "Agosto",
+        "Septiembre",
+        "Octubre",
+        "Noviembre",
+        "Diciembre"
+      ];
+
+      // ── Período activo (≤ día 20 → mes anterior) ────────────────────
+      function obtenerPeriodoActivo() {
+        const hoy = new Date();
+        let mesIndex = hoy.getDate() <= 20 ? hoy.getMonth() - 1 : hoy.getMonth();
+        let anio = hoy.getFullYear();
+        if (mesIndex < 0) {
+          mesIndex = 11;
+          anio -= 1;
+        }
+        return { mes: MESES[mesIndex], mesIndex, anio };
+      }
+
+      // ── Año de servicio (Sep–Dic = año calendario; Ene–Ago = año anterior) ─
+      function obtenerAnioServicio(mesNombre, anioCalendario) {
+        const segundaMitad = ["Septiembre", "Octubre", "Noviembre", "Diciembre"];
+        return segundaMitad.includes(mesNombre) ? anioCalendario : anioCalendario - 1;
+      }
+
+      // ── Inicialización ──────────────────────────────────────────────
+      (function init() {
+        mesSelect.value = obtenerPeriodoActivo().mes;
+
+        const grupoGuardado = localStorage.getItem(C.prefix + "grupo");
+        const nombreGuardado = localStorage.getItem(C.prefix + "nombre");
+        if (grupoGuardado) grupoSelect.value = grupoGuardado;
+        if (nombreGuardado) nombreInput.value = nombreGuardado;
+
+        grupoSelect.addEventListener("change", () => {
+          localStorage.setItem(C.prefix + "grupo", grupoSelect.value);
+        });
+
+        detectarReenvio();
+      })();
+
+      // ── Perfil ──────────────────────────────────────────────────────
+      document.querySelectorAll('input[name="perfil"]').forEach((radio) => {
+        radio.addEventListener("change", (e) => {
+          const esPublicador = e.target.value === "Publicador";
+          campoPredico.classList.toggle("hidden", !esPublicador);
+          campoHoras.classList.toggle("hidden", esPublicador);
+        });
+      });
+
+      // ── Nombre ──────────────────────────────────────────────────────
+      nombreInput.addEventListener("blur", () => {
+        nombreInput.value = nombreInput.value
+          .trim()
+          .split(/\s+/)
+          .map((p) => p.charAt(0).toUpperCase() + p.slice(1).toLowerCase())
+          .join(" ");
+      });
+
+      nombreInput.addEventListener("invalid", () => {
+        const valido = /\b\w+\b\s+\b\w+\b/.test(nombreInput.value.trim());
+        nombreInput.setCustomValidity(valido ? "" : "Ingresa al menos nombre y apellido.");
+      });
+
+      nombreInput.addEventListener("input", () => nombreInput.setCustomValidity(""));
+
+      // ── Envío ───────────────────────────────────────────────────────
+      form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const perfilSeleccionado = form.querySelector('input[name="perfil"]:checked')?.value;
+
+        if (perfilSeleccionado === "Publicador") {
+          if (!form.querySelector('input[name="predico"]:checked')) {
+            await mostrarModalAviso("⚠️", "Falta un dato", "Por favor indica si predicó este mes antes de continuar.");
+            return;
+          }
+        }
+
+        if (perfilSeleccionado === "Precursor Auxiliar" || perfilSeleccionado === "Precursor Regular") {
+          const horas = parseInt(document.getElementById("horas").value);
+          if (!horas || horas === 0) {
+            const confirmar = await mostrarModalConfirm(
+              "🕓",
+              "Sin horas registradas",
+              "No ingresaste horas. ¿Deseas enviar el informe con 0 horas?",
+              "Sí, enviar con 0",
+              "Corregir"
+            );
+            if (!confirmar) return;
+          }
+        }
+
+        const boton = form.querySelector("button[type='submit']");
+        boton.disabled = true;
+        const textoOriginal = boton.textContent;
+        boton.textContent = "Enviando...";
+
+        const plain = Object.fromEntries(new FormData(form).entries());
+        if (!plain.cursos || isNaN(plain.cursos)) plain.cursos = 0;
+        plain.anio = new Date().getFullYear();
+        plain.anioServicio = obtenerAnioServicio(plain.mes, plain.anio);
+        localStorage.setItem(C.prefix + "nombre", plain.nombre);
+
+        try {
+          const docRef = await addDoc(collection(db, C.coleccion), plain);
+          guardarUltimoInforme(docRef.id, plain.mes);
+
+          document.getElementById("span-nombre").textContent = plain.nombre;
+          document.getElementById("span-mes").textContent = plain.mes;
+          document.getElementById("span-perfil").textContent = plain.perfil;
+
+          document.getElementById("span-horas-o-predico").innerHTML =
+            plain.perfil === "Publicador"
+              ? `<strong>Predicó:</strong> ${plain.predico || "No"}<br>`
+              : `<strong>Horas:</strong> ${plain.horas}<br>`;
+
+          document.getElementById("span-cursos").textContent = plain.cursos;
+          document.getElementById("span-comentarios").innerHTML = plain.comentarios?.trim()
+            ? `<strong>Comentarios:</strong> "${plain.comentarios.trim()}"`
+            : "";
+
+          form.classList.add("hidden");
+          confirmacion.style.display = "block";
+          window.scrollTo({ top: 0, behavior: "smooth" });
+          parent.postMessage("scrollToTop", "*");
+
+          form.reset();
+          campoPredico.classList.add("hidden");
+          campoHoras.classList.add("hidden");
+
+          const grupoGuardado = localStorage.getItem(C.prefix + "grupo");
+          if (grupoGuardado) grupoSelect.value = grupoGuardado;
+          mesSelect.value = obtenerPeriodoActivo().mes;
+        } catch (error) {
+          console.error("Error al guardar en Firestore:", error);
+          form.classList.add("hidden");
+          document.getElementById("error-box").style.display = "block";
+          boton.disabled = false;
+          boton.textContent = textoOriginal;
+        }
+      });
+
+      // ── Detección de reenvío ────────────────────────────────────────
+      function detectarReenvio() {
+        if (sessionStorage.getItem(C.prefix + "permitirReenvio") === "true") {
+          sessionStorage.removeItem(C.prefix + "permitirReenvio");
+          return;
+        }
+        const cache = localStorage.getItem(C.prefix + "ultimoInforme");
+        if (!cache) return;
+        let ultimo;
+        try {
+          ultimo = JSON.parse(cache);
+        } catch {
+          return;
+        }
+        const { mes, anio } = obtenerPeriodoActivo();
+        if (ultimo.mes === mes && ultimo.anio === anio) mostrarModalEdicion(ultimo.docId);
+      }
+
+      function mostrarModalEdicion(docId) {
+        const nombre = localStorage.getItem(C.prefix + "nombre") || "";
+        const { mes } = obtenerPeriodoActivo();
+        document.getElementById("modal-1-title").textContent = `Hola ${nombre}`;
+        document.getElementById("modal-mensaje").textContent =
+          `Ya enviaste tu informe de ${mes}. ¿Necesitas hacer un cambio?`;
+        document.getElementById("btn-editar").onclick = () => {
+          window.open(C.editBaseUrl + docId);
+        };
+        document.getElementById("modal-reenvio").classList.remove("oculto");
+      }
+
+      function guardarUltimoInforme(docId, mesSeleccionado) {
+        if (!mesSeleccionado || !docId) return;
+        localStorage.setItem(
+          C.prefix + "ultimoInforme",
+          JSON.stringify({
+            mes: mesSeleccionado,
+            anio: new Date().getFullYear(),
+            docId
+          })
+        );
+      }
+
+      window.volverFormulario = function () {
+        sessionStorage.setItem(C.prefix + "permitirReenvio", "true");
+        location.reload();
+      };
+
+      window.reintentarEnvio = function () {
+        document.getElementById("error-box").style.display = "none";
+        form.classList.remove("hidden");
+      };
+    </script>
+  </body>
+</html>
