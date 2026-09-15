@@ -1,0 +1,993 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&display=swap" rel="stylesheet" />
+    <link rel="icon" href="/favicon.ico" type="image/x-icon" />
+    <title>Informes Enviados</title>
+
+    <!-- ── Configuración de congregación ── -->
+    <script src="/config.js"></script>
+    <script>
+      document.title = "Informes Enviados — " + (window.INFORME_CONFIG?.congregacion || "Congregación");
+    </script>
+
+    <style>
+      /* ── Variables de tema ── */
+      :root {
+        --bg: #f0f2f7;
+        --surface: #ffffff;
+        --border: #e2e6ef;
+        --text: #1a1d2e;
+        --text-sub: #6b7280;
+        --accent: #3a5bd9;
+        --accent-2: #6c8ef5;
+        --pub: #1d7a4f;
+        --pub-bg: #e8f7f0;
+        --aux: #b45309;
+        --aux-bg: #fef3e0;
+        --reg: #1d5fa8;
+        --reg-bg: #e8f0fd;
+        --tag-text: #fff;
+        --shadow: 0 2px 12px rgba(0, 0, 0, 0.07);
+        --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.1);
+        --radius: 12px;
+      }
+
+      body.oscuro {
+        --bg: #0e1117;
+        --surface: #1a1d2a;
+        --border: #2a2e3d;
+        --text: #e8eaf0;
+        --text-sub: #8b92a8;
+        --accent: #6c8ef5;
+        --accent-2: #9bb0ff;
+        --pub: #4ade80;
+        --pub-bg: #0d2b1a;
+        --aux: #fbbf24;
+        --aux-bg: #2b1f07;
+        --reg: #7eb3ff;
+        --reg-bg: #0d1e35;
+        --shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
+        --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.4);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Outfit", system-ui, sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        margin: 0;
+        min-height: 100vh;
+        transition:
+          background 0.3s,
+          color 0.3s;
+      }
+
+      /* ── Header ── */
+      .header {
+        background: var(--surface);
+        border-bottom: 1px solid var(--border);
+        padding: 1.2rem 1.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        box-shadow: var(--shadow);
+      }
+
+      .header h1 {
+        font-size: 1.2rem;
+        font-weight: 700;
+        margin: 0;
+        color: var(--text);
+      }
+
+      .header-sub {
+        font-size: 0.75rem;
+        color: var(--text-sub);
+        font-weight: 400;
+      }
+
+      .btn-theme {
+        background: var(--bg);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 0.4rem 0.7rem;
+        cursor: pointer;
+        color: var(--text-sub);
+        display: flex;
+        align-items: center;
+        gap: 0.3rem;
+        font-size: 0.85rem;
+        transition:
+          background 0.2s,
+          color 0.2s;
+      }
+
+      .btn-theme:hover {
+        background: var(--border);
+        color: var(--text);
+      }
+
+      /* ── Filtros ── */
+      .filtros-wrap {
+        max-width: 860px;
+        margin: 1.5rem auto 0;
+        padding: 0 1rem;
+      }
+
+      .filtros {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 1rem 1.2rem;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        flex-wrap: wrap;
+        box-shadow: var(--shadow);
+      }
+
+      .filtros label {
+        font-weight: 600;
+        font-size: 0.9rem;
+        color: var(--text-sub);
+        white-space: nowrap;
+      }
+
+      .filtros select {
+        background: var(--bg);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 0.45rem 0.9rem;
+        font-size: 0.95rem;
+        font-family: inherit;
+        color: var(--text);
+        cursor: pointer;
+        outline: none;
+        transition: border-color 0.2s;
+      }
+
+      .filtros select:focus {
+        border-color: var(--accent);
+      }
+
+      /* ── Contador ── */
+      .stats-bar {
+        max-width: 860px;
+        margin: 1rem auto 0;
+        padding: 0 1rem;
+        display: flex;
+        gap: 0.8rem;
+        flex-wrap: wrap;
+      }
+
+      .stat-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        padding: 0.3rem 0.8rem;
+        border-radius: 99px;
+        font-size: 0.82rem;
+        font-weight: 600;
+        border: 1px solid var(--border);
+        background: var(--surface);
+        color: var(--text-sub);
+      }
+
+      .stat-chip .dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+      }
+
+      .dot-pub {
+        background: var(--pub);
+      }
+      .dot-aux {
+        background: var(--aux);
+      }
+      .dot-reg {
+        background: var(--reg);
+      }
+
+      /* ── Contenido principal ── */
+      .main {
+        max-width: 860px;
+        margin: 1.2rem auto 6rem;
+        padding: 0 1rem;
+      }
+
+      /* ── Sección por perfil ── */
+      .seccion {
+        margin-bottom: 2rem;
+      }
+
+      .seccion-titulo {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        margin-bottom: 0.8rem;
+      }
+
+      .seccion-titulo h2 {
+        font-size: 1rem;
+        font-weight: 700;
+        margin: 0;
+        color: var(--text);
+      }
+
+      .badge-count {
+        background: var(--accent);
+        color: #fff;
+        border-radius: 99px;
+        padding: 0.1rem 0.55rem;
+        font-size: 0.75rem;
+        font-weight: 700;
+      }
+
+      .linea {
+        flex: 1;
+        height: 1px;
+        background: var(--border);
+      }
+
+      /* ── Tarjeta de informe ── */
+      .tarjeta {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        overflow: hidden;
+        margin-bottom: 0.6rem;
+        box-shadow: var(--shadow);
+        transition:
+          box-shadow 0.2s,
+          transform 0.15s;
+      }
+
+      .tarjeta:hover {
+        box-shadow: var(--shadow-lg);
+        transform: translateY(-1px);
+      }
+
+      .tarjeta-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0.85rem 1rem;
+        cursor: pointer;
+        user-select: none;
+        gap: 0.5rem;
+      }
+
+      .tarjeta-nombre {
+        font-weight: 600;
+        font-size: 1rem;
+        color: var(--text);
+        flex: 1;
+      }
+
+      .tarjeta-actions {
+        display: flex;
+        align-items: center;
+        gap: 0.3rem;
+      }
+
+      .tag {
+        padding: 0.2rem 0.6rem;
+        border-radius: 99px;
+        font-size: 0.72rem;
+        font-weight: 700;
+        letter-spacing: 0.02em;
+      }
+
+      .tag-pub {
+        background: var(--pub-bg);
+        color: var(--pub);
+      }
+      .tag-aux {
+        background: var(--aux-bg);
+        color: var(--aux);
+      }
+      .tag-reg {
+        background: var(--reg-bg);
+        color: var(--reg);
+      }
+
+      .btn-icon {
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 0.3rem;
+        border-radius: 6px;
+        color: var(--text-sub);
+        display: flex;
+        align-items: center;
+        transition:
+          background 0.15s,
+          color 0.15s;
+      }
+
+      .btn-icon:hover {
+        background: var(--border);
+        color: var(--text);
+      }
+      .btn-icon .material-symbols-outlined {
+        font-size: 1.15rem;
+      }
+
+      .chevron {
+        transition: transform 0.25s;
+        font-size: 1.1rem !important;
+      }
+
+      .tarjeta.abierta .chevron {
+        transform: rotate(180deg);
+      }
+
+      .tarjeta-cuerpo {
+        display: none;
+        padding: 0 1rem 1rem;
+        border-top: 1px solid var(--border);
+        animation: fadeIn 0.15s ease;
+      }
+
+      .tarjeta.abierta .tarjeta-cuerpo {
+        display: block;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(-4px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .campo-fila {
+        display: flex;
+        gap: 0.4rem;
+        padding: 0.45rem 0;
+        border-bottom: 1px solid var(--border);
+        font-size: 0.92rem;
+        align-items: flex-start;
+      }
+
+      .campo-fila:last-child {
+        border-bottom: none;
+      }
+
+      .campo-label {
+        color: var(--text-sub);
+        font-weight: 600;
+        min-width: 130px;
+        font-size: 0.85rem;
+      }
+
+      .campo-valor {
+        color: var(--text);
+      }
+
+      /* ── Estado vacío / mensaje ── */
+      .mensaje-vacio {
+        text-align: center;
+        padding: 3rem 1rem;
+        color: var(--text-sub);
+      }
+
+      .mensaje-vacio .material-symbols-outlined {
+        font-size: 3rem;
+        display: block;
+        margin-bottom: 0.8rem;
+        opacity: 0.4;
+      }
+
+      .mensaje-vacio p {
+        margin: 0;
+        font-size: 0.95rem;
+      }
+
+      /* ── Modal de info (doc ID) ── */
+      .overlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.55);
+        backdrop-filter: blur(4px);
+        z-index: 500;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .overlay.activo {
+        display: flex;
+      }
+
+      .modal-box {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 1.5rem;
+        max-width: 420px;
+        width: 90%;
+        position: relative;
+        box-shadow: var(--shadow-lg);
+        animation: fadeIn 0.2s ease;
+      }
+
+      .modal-box h3 {
+        margin: 0 0 1rem;
+        font-size: 1rem;
+        font-weight: 700;
+        color: var(--text);
+      }
+
+      .doc-id-row {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        background: var(--bg);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 0.6rem 0.8rem;
+        margin-bottom: 0.8rem;
+      }
+
+      .doc-id-texto {
+        flex: 1;
+        font-size: 0.82rem;
+        color: var(--text-sub);
+        word-break: break-all;
+        user-select: text;
+      }
+
+      .modal-acciones {
+        display: flex;
+        gap: 0.6rem;
+        flex-wrap: wrap;
+      }
+
+      .btn-accion {
+        flex: 1;
+        padding: 0.55rem 0.8rem;
+        border-radius: 8px;
+        border: 1px solid var(--border);
+        background: var(--bg);
+        color: var(--text);
+        font-family: inherit;
+        font-size: 0.88rem;
+        font-weight: 600;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.4rem;
+        transition:
+          background 0.15s,
+          border-color 0.15s;
+      }
+
+      .btn-accion:hover {
+        background: var(--border);
+      }
+
+      .btn-accion.primario {
+        background: var(--accent);
+        border-color: var(--accent);
+        color: #fff;
+      }
+
+      .btn-accion.primario:hover {
+        background: var(--accent-2);
+        border-color: var(--accent-2);
+      }
+
+      .btn-cerrar-modal {
+        position: absolute;
+        top: 0.8rem;
+        right: 0.8rem;
+        background: none;
+        border: none;
+        cursor: pointer;
+        color: var(--text-sub);
+        display: flex;
+        align-items: center;
+        padding: 0.2rem;
+        border-radius: 6px;
+        transition: background 0.15s;
+      }
+
+      .btn-cerrar-modal:hover {
+        background: var(--border);
+      }
+
+      /* ── Toast ── */
+      .toast {
+        position: fixed;
+        bottom: 1.5rem;
+        left: 50%;
+        transform: translateX(-50%) translateY(20px);
+        background: var(--text);
+        color: var(--bg);
+        padding: 0.6rem 1.2rem;
+        border-radius: 99px;
+        font-size: 0.88rem;
+        font-weight: 600;
+        opacity: 0;
+        transition:
+          opacity 0.3s,
+          transform 0.3s;
+        pointer-events: none;
+        z-index: 999;
+        white-space: nowrap;
+      }
+
+      .toast.show {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Header -->
+    <header class="header">
+      <div style="font-family: &quot;Outfit&quot;, sans-serif; font-weight: 700; font-size: 1.15rem">
+        Informes Enviados
+      </div>
+      <button class="btn-theme" id="btn-theme" title="Cambiar tema">
+        <span class="material-symbols-outlined" style="font-size: 1.1rem">dark_mode</span>
+        <span id="label-theme">Oscuro</span>
+      </button>
+    </header>
+
+    <!-- Filtros -->
+    <div class="filtros-wrap">
+      <div class="filtros">
+        <label for="grupo-select">Grupo:</label>
+        <select id="grupo-select">
+          <option value="" selected disabled>Selecciona</option>
+          <!-- Opciones generadas dinámicamente desde config.js -->
+        </select>
+        <label for="mes-select">Mes:</label>
+        <select id="mes-select">
+          <option value="" disabled selected>Cargando…</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats-bar" id="stats-bar" style="display: none">
+      <span class="stat-chip"><span class="dot dot-pub"></span><span id="cnt-pub">0</span> Publicadores</span>
+      <span class="stat-chip"><span class="dot dot-aux"></span><span id="cnt-aux">0</span> Prec. Auxiliares</span>
+      <span class="stat-chip"><span class="dot dot-reg"></span><span id="cnt-reg">0</span> Prec. Regulares</span>
+    </div>
+
+    <!-- Contenido -->
+    <main class="main">
+      <div id="mensaje-inicial" class="mensaje-vacio">
+        <span class="material-symbols-outlined">inbox</span>
+        <p>Selecciona un grupo y un mes para ver los informes.</p>
+      </div>
+
+      <div id="contenedor-informes" style="display: none">
+        <!-- Publicadores -->
+        <div class="seccion" id="sec-pub">
+          <div class="seccion-titulo">
+            <h2>Publicadores</h2>
+            <span class="badge-count" id="badge-pub">0</span>
+            <div class="linea"></div>
+          </div>
+          <div id="lista-pub"></div>
+        </div>
+
+        <!-- Precursores Auxiliares -->
+        <div class="seccion" id="sec-aux">
+          <div class="seccion-titulo">
+            <h2>Precursores Auxiliares</h2>
+            <span class="badge-count" id="badge-aux">0</span>
+            <div class="linea"></div>
+          </div>
+          <div id="lista-aux"></div>
+        </div>
+
+        <!-- Precursores Regulares -->
+        <div class="seccion" id="sec-reg">
+          <div class="seccion-titulo">
+            <h2>Precursores Regulares</h2>
+            <span class="badge-count" id="badge-reg">0</span>
+            <div class="linea"></div>
+          </div>
+          <div id="lista-reg"></div>
+        </div>
+      </div>
+    </main>
+
+    <!-- Modal info del doc -->
+    <div class="overlay" id="overlay-info">
+      <div class="modal-box">
+        <button class="btn-cerrar-modal" id="cerrar-info">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+        <h3>Detalles del informe</h3>
+        <div class="doc-id-row">
+          <span class="doc-id-texto" id="modal-doc-id"></span>
+        </div>
+        <div class="modal-acciones">
+          <button class="btn-accion" id="btn-copiar-id">
+            <span class="material-symbols-outlined" style="font-size: 1rem">content_copy</span>
+            Copiar ID
+          </button>
+          <button class="btn-accion primario" id="btn-copiar-link">
+            <span class="material-symbols-outlined" style="font-size: 1rem">link</span>
+            Copiar link de edición
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Toast -->
+    <div class="toast" id="toast"></div>
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         0. INICIALIZAR DESDE CONFIG
+    ═══════════════════════════════════════════════════════════════ -->
+    <script>
+      (function () {
+        const C = window.INFORME_CONFIG;
+        if (!C) { console.error("config.js no encontrado"); return; }
+
+        // Opciones del select de grupo
+        const grupoSel = document.getElementById("grupo-select");
+        if (grupoSel) {
+          C.grupos.forEach(function (g) {
+            const opt = document.createElement("option");
+            opt.value = g;
+            opt.textContent = "Grupo " + g;
+            grupoSel.appendChild(opt);
+          });
+        }
+      })();
+    </script>
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         1. TEMA Y UTILIDADES
+    ═══════════════════════════════════════════════════════════════ -->
+    <script>
+      const THEME_KEY = window.INFORME_CONFIG.prefix + "theme";
+      const body = document.body;
+      const btnTheme = document.getElementById("btn-theme");
+      const labelTheme = document.getElementById("label-theme");
+
+      function esTemaOscuro(theme) {
+        if (theme === "auto" || !theme) return window.matchMedia("(prefers-color-scheme: dark)").matches;
+        return theme === "dark";
+      }
+
+      function setTema(oscuro) {
+        body.classList.toggle("oscuro", oscuro);
+        labelTheme.textContent = oscuro ? "Claro" : "Oscuro";
+        btnTheme.querySelector(".material-symbols-outlined").textContent = oscuro ? "light_mode" : "dark_mode";
+        localStorage.setItem(THEME_KEY, oscuro ? "dark" : "light");
+      }
+
+      // Inicializar tema
+      setTema(esTemaOscuro(localStorage.getItem(THEME_KEY)));
+
+      // Reaccionar a cambios del sistema si está en "auto"
+      window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => {
+        if (localStorage.getItem(THEME_KEY) === "auto")
+          setTema(window.matchMedia("(prefers-color-scheme: dark)").matches);
+      });
+
+      btnTheme.addEventListener("click", () => setTema(!body.classList.contains("oscuro")));
+
+      // Toast
+      function mostrarToast(msg) {
+        const t = document.getElementById("toast");
+        t.textContent = msg;
+        t.classList.add("show");
+        setTimeout(() => t.classList.remove("show"), 2200);
+      }
+    </script>
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         2. FIREBASE + LÓGICA PRINCIPAL
+    ═══════════════════════════════════════════════════════════════ -->
+    <script type="module">
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+      import {
+        getFirestore,
+        collection,
+        getDocs,
+        query,
+        where
+      } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+      import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+
+      const C = window.INFORME_CONFIG;
+
+      const app = initializeApp(C.firebase);
+      const db = getFirestore(app);
+      const auth = getAuth(app);
+
+      signInAnonymously(auth).catch(console.error);
+
+      // ── Elementos ────────────────────────────────────────────────────────
+      const grupoSelect = document.getElementById("grupo-select");
+      const mesSelect = document.getElementById("mes-select");
+
+      const listas = {
+        Publicador: document.getElementById("lista-pub"),
+        "Precursor Auxiliar": document.getElementById("lista-aux"),
+        "Precursor Regular": document.getElementById("lista-reg")
+      };
+
+      const badges = {
+        Publicador: document.getElementById("badge-pub"),
+        "Precursor Auxiliar": document.getElementById("badge-aux"),
+        "Precursor Regular": document.getElementById("badge-reg")
+      };
+
+      const contadores = {
+        Publicador: document.getElementById("cnt-pub"),
+        "Precursor Auxiliar": document.getElementById("cnt-aux"),
+        "Precursor Regular": document.getElementById("cnt-reg")
+      };
+
+      // ── Llenar select de meses ───────────────────────────────────────────
+      const ORDEN_MESES = [
+        "Enero",
+        "Febrero",
+        "Marzo",
+        "Abril",
+        "Mayo",
+        "Junio",
+        "Julio",
+        "Agosto",
+        "Septiembre",
+        "Octubre",
+        "Noviembre",
+        "Diciembre"
+      ];
+
+      async function llenarMeses() {
+        const snapshot = await getDocs(collection(db, C.coleccion));
+
+        // Construir set de combinaciones únicas "mes|anio"
+        const combinaciones = new Set(
+          snapshot.docs
+            .map((d) => {
+              const data = d.data();
+              return data.mes && data.anio ? `${data.mes}|${data.anio}` : null;
+            })
+            .filter(Boolean)
+        );
+
+        // Convertir a objetos y ordenar: primero por año de servicio desc, luego por mes desc
+        const MESES_SEGUNDA_MITAD = ["Septiembre", "Octubre", "Noviembre", "Diciembre"];
+
+        const items = [...combinaciones].map((c) => {
+          const [mes, anio] = c.split("|");
+          const anioNum = parseInt(anio);
+          const anioServicio = MESES_SEGUNDA_MITAD.includes(mes) ? anioNum : anioNum - 1;
+          return { mes, anio: anioNum, anioServicio, mesIndex: ORDEN_MESES.indexOf(mes) };
+        });
+
+        items.sort((a, b) => {
+          // Primero año de servicio descendente
+          if (b.anioServicio !== a.anioServicio) return b.anioServicio - a.anioServicio;
+          // Dentro del mismo año de servicio, orden natural del año de servicio:
+          // Sep > Oct > Nov > Dic > Ene > Feb > ... > Ago
+          const ordenAS = (item) =>
+            MESES_SEGUNDA_MITAD.includes(item.mes)
+              ? item.mesIndex // Sep=8, Oct=9, Nov=10, Dic=11
+              : item.mesIndex + 12; // Ene=12, Feb=13, ..., Ago=19
+          return ordenAS(b) - ordenAS(a);
+        });
+
+        mesSelect.innerHTML = '<option value="" disabled selected>Selecciona</option>';
+        items.forEach(({ mes, anio }) => {
+          const opt = document.createElement("option");
+          opt.value = `${mes}|${anio}`;
+          opt.textContent = `${mes} ${anio}`;
+          mesSelect.appendChild(opt);
+        });
+      }
+
+      // ── Helpers de tarjeta ───────────────────────────────────────────────
+      function tagClass(perfil) {
+        if (perfil === "Publicador") return "tag-pub";
+        if (perfil === "Precursor Auxiliar") return "tag-aux";
+        return "tag-reg";
+      }
+
+      function crearFila(label, valor) {
+        if (valor === undefined || valor === null || valor === "") return "";
+        return `
+          <div class="campo-fila">
+            <span class="campo-label">${label}</span>
+            <span class="campo-valor">${valor}</span>
+          </div>`;
+      }
+
+      function crearTarjeta(informe) {
+        const div = document.createElement("div");
+        div.className = "tarjeta";
+        div.dataset.docId = informe.id;
+
+        const cuerpoHTML =
+          informe.perfil === "Publicador"
+            ? `${crearFila("¿Predicó?", informe.predico)}
+             ${crearFila("Cursos bíblicos", informe.cursos)}
+             ${informe.comentarios ? crearFila("Comentarios", informe.comentarios) : ""}`
+            : `${crearFila("Horas", informe.horas)}
+             ${crearFila("Cursos bíblicos", informe.cursos)}
+             ${informe.comentarios ? crearFila("Comentarios", informe.comentarios) : ""}`;
+
+        div.innerHTML = `
+          <div class="tarjeta-header">
+            <span class="tarjeta-nombre">${informe.nombre}</span>
+            <div class="tarjeta-actions">
+              <span class="tag ${tagClass(informe.perfil)}">${informe.perfil}</span>
+              <button class="btn-icon btn-info" title="Ver ID del documento">
+                <span class="material-symbols-outlined">info</span>
+              </button>
+              <button class="btn-icon btn-toggle" title="Expandir">
+                <span class="material-symbols-outlined chevron">expand_more</span>
+              </button>
+            </div>
+          </div>
+          <div class="tarjeta-cuerpo">${cuerpoHTML}</div>
+        `;
+
+        // Toggle expandir
+        div.querySelector(".btn-toggle").addEventListener("click", () => {
+          div.classList.toggle("abierta");
+        });
+
+        div.querySelector(".tarjeta-header").addEventListener("click", (e) => {
+          if (e.target.closest(".btn-info")) return;
+          div.classList.toggle("abierta");
+        });
+
+        // Botón info → modal
+        div.querySelector(".btn-info").addEventListener("click", (e) => {
+          e.stopPropagation();
+          abrirModalInfo(informe.id);
+        });
+
+        return div;
+      }
+
+      // ── Renderizar informes ──────────────────────────────────────────────
+      function renderizar(datos) {
+        // Limpiar
+        for (const key in listas) listas[key].innerHTML = "";
+
+        // Conteos
+        const conteo = { Publicador: 0, "Precursor Auxiliar": 0, "Precursor Regular": 0 };
+
+        datos
+          .sort((a, b) => a.nombre.localeCompare(b.nombre))
+          .forEach((informe) => {
+            const lista = listas[informe.perfil];
+            if (!lista) return;
+            lista.appendChild(crearTarjeta(informe));
+            conteo[informe.perfil]++;
+          });
+
+        // Actualizar badges y contadores
+        for (const perfil in conteo) {
+          const n = conteo[perfil];
+          badges[perfil].textContent = n;
+          contadores[perfil].textContent = n;
+        }
+
+        // Stats bar
+        document.getElementById("stats-bar").style.display = datos.length > 0 ? "flex" : "none";
+
+        // Mostrar secciones vacías con mensaje
+        for (const perfil in listas) {
+          if (conteo[perfil] === 0) {
+            listas[perfil].innerHTML = `
+              <p style="color:var(--text-sub); font-size:0.88rem; padding:0.5rem 0; font-style:italic;">
+                Sin informes de este perfil.
+              </p>`;
+          }
+        }
+      }
+
+      // ── Cargar informes ──────────────────────────────────────────────────
+      async function cargarInformes() {
+        const grupo = grupoSelect.value;
+        const mes = mesSelect.value;
+
+        const inicial = document.getElementById("mensaje-inicial");
+        const contenedor = document.getElementById("contenedor-informes");
+
+        if (!grupo || !mes) {
+          inicial.style.display = "block";
+          contenedor.style.display = "none";
+          document.getElementById("stats-bar").style.display = "none";
+          return;
+        }
+
+        inicial.style.display = "none";
+        contenedor.style.display = "block";
+
+        const [mesNombre, anioStr] = mes.split("|");
+        const anioNum = parseInt(anioStr);
+        const q = query(
+          collection(db, C.coleccion),
+          where("grupo", "==", grupo),
+          where("mes", "==", mesNombre),
+          where("anio", "==", anioNum)
+        );
+
+        const snapshot = await getDocs(q);
+        const datos = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+
+        if (datos.length === 0) {
+          contenedor.style.display = "none";
+          inicial.innerHTML = `
+            <span class="material-symbols-outlined">search_off</span>
+            <p>No hay informes para Grupo ${grupo} — ${mes.replace("|", " ")}.</p>
+          `;
+          inicial.style.display = "block";
+        } else {
+          renderizar(datos);
+        }
+      }
+
+      grupoSelect.addEventListener("change", cargarInformes);
+      mesSelect.addEventListener("change", cargarInformes);
+
+      llenarMeses();
+
+      // ── Modal de info ────────────────────────────────────────────────────
+      const overlayInfo = document.getElementById("overlay-info");
+      const modalDocId = document.getElementById("modal-doc-id");
+
+      function abrirModalInfo(docId) {
+        modalDocId.textContent = docId;
+        overlayInfo.classList.add("activo");
+      }
+
+      document.getElementById("cerrar-info").addEventListener("click", () => {
+        overlayInfo.classList.remove("activo");
+      });
+
+      overlayInfo.addEventListener("click", (e) => {
+        if (e.target === overlayInfo) overlayInfo.classList.remove("activo");
+      });
+
+      document.getElementById("btn-copiar-id").addEventListener("click", () => {
+        const id = modalDocId.textContent;
+        navigator.clipboard
+          .writeText(id)
+          .then(() => mostrarToast("ID copiado"))
+          .catch(() => mostrarToast("Error al copiar"));
+      });
+
+      document.getElementById("btn-copiar-link").addEventListener("click", () => {
+        const id = modalDocId.textContent;
+        const url = C.editBaseUrl + encodeURIComponent(id);
+        navigator.clipboard
+          .writeText(url)
+          .then(() => mostrarToast("Link copiado"))
+          .catch(() => mostrarToast("Error al copiar"));
+      });
+    </script>
+  </body>
+</html>
